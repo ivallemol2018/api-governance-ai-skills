@@ -1,0 +1,100 @@
+version_catalogo: '3.0.0'
+tipos_api: [BS, UX, CR, DT, PU, PV, OP]
+severidad:
+ mayor: error # info.version X.0.0 (1.0.0, 2.0.0, ...): API nueva o versión mayor 
+ menor: warn # demás versiones (1.1.0, 2.0.1, ...) o info.version que no es texto 
+spectral_descripciones_genericas:
+ - Código correspondiente
+ - Valor correspondiente
+ - Dato correspondiente
+ - Información asociada
+ - Información correspondiente
+ - Información del campo
+ - Descripción del campo
+ - Valor del campo
+ - Dato del campo 
+ - Campo de entrada 
+ - Campo de salida
+ - Valor del parámetro
+ - Descripción
+ - Identificador
+ - Información
+ - Por definir
+ - Sin descripción
+reglas:
+ - codigo: R-GENM01
+   nombre: Coherencia de identidad y alcance general
+   metodo: verificacion
+   pregunta: ¿El texto describe una entidad, acción o finalidad incompatible con su referencia? 
+   si: >-
+     title y description del API con entidades o finalidades incompatibles; tag que 
+     pertenece a otro contexto; summary y description de la operación con acciones o 
+     finalidades distintas; description que contradice el contexto del API.
+   'no': >-
+     Sinónimos o redacción distinta; contexto del API que no enumera la operación o la
+     incluye en un ámbito mayor; actor o destinatario distinto de la entidad gestionada; 
+     método, URI, campos, versión o tipo de API.
+   ejemplo: >-
+     summary <<Listar cuentas del cliente.»> con description <<Permite bloquear una cuenta
+     del cliente.>>
+ - codigo: R-GENM02
+   nombre: Calidad lingüística de los textos
+   metodo: calculada
+   palabras permitidas: [token, upi, tapp, bmo, d3, header]
+ - codigo: R-OPEM01
+   nombre: Coherencia funcional de la operación
+   metodo: verificacion
+   pregunta: ¿Alguna entrada o el resultado 2XX representa un concepto o una acción distinta de la finalidad 
+   si: >-
+    Entrada sin relación con la finalidad; request que representa otra acción; 2XX que
+    devuelve un concepto distinto del declarado.
+   'no': >-
+     Método, URI, códigos de estado, headers, paginación, cardinalidad, tipos, errores,
+     nombres de schemas o diseño de negocio; contradicción solo entre summary y description 
+     (es de R-GENM01).
+   ejemplo: >-
+    <<Consultar cuentas del cliente.» con 2XX LoanList «<Préstamos contratados por el
+    cliente.>>
+ - codigo: R-DATM01
+   nombre: Claridad de las descripciones de datos
+   metodo: calculada
+ - codigo: R-DATM02
+   nombre: Coherencia semántica de campos y valores
+   metodo: mixta
+   pregunta: ¿Los valores del enum pertenecen a una categoría distinta de la que indican el nombre y la descripcio 
+   si: Valores de otra categoría conceptual (p. ej., tipos de cuenta en un estado).
+   'no': Cantidad, formato, idioma o completitud de los valores; valores genéricos o técnicos.
+   ejemplo: accountStatus «Estado actual de la cuenta.» enum=[SAVINGS, CURRENT].
+ - codigo: R-DATM03
+   nombre: Consistencia transversal de conceptos
+   activa: false
+   metodo: verificacion
+   pregunta: ¿Alguna descripción le da a este mismo nombre un significado que contradice el de los demás lugares? 
+   si: >-
+    Una descripción describe un dato distinto del que indica el nombre (customerId descrito 
+    como identificador de la cuenta), o request y response le dan significados distintos. 
+   'no': >-
+     Cada descripción se refiere al objeto que la contiene (partyId del pagador en un objeto y 
+     del banco en otro); redacción distinta, precisiones o contexto adicional del mismo dato. 
+   ejemplo: >-
+     customerId <<Identificador único del cliente.» y «Identificador de la cuenta
+     bancaria.>>
+   nombres_genericos: [code, codes, amount, status, state, description, name, type, value, id, 
+                       date, number, message, detail, details, title, text, data, list, items, 
+                       total, quantity, count, reason, category]
+ - codigo: R-DATM04
+   nombre: Coherencia de relaciones entre datos
+   metodo: calculada
+ - codigo: R-DATM05
+   nombre: Coherencia del modelo funcional de datos
+   metodo: verificacion
+   pregunta: ¿Alguna propiedad es claramente ajena al concepto del objeto?
+   si: >-
+    Propiedad de otro dominio sin justificación en el contrato (p. ej., vehicleplate en una 
+    cuenta); objeto que mezcla responsabilidades de conceptos distintos.
+   'no': >-
+    Datos de entidades relacionadas, identificadores, estado, fechas, auditoría o canal; 
+    cantidad o profundidad de propiedades; composición técnica.
+   ejemplo: >-
+    Customer Account «Información de una cuenta bancaria del cliente.»: accountId, 
+    vehicleplate, engineNumber.
